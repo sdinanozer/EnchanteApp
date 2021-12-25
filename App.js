@@ -75,27 +75,28 @@ const LoginScreen = ({ navigation }) => {
           <TextInput label="Password" value={passw} secureTextEntry={true} style={styles.loginInput}
                     onChangeText={passw => setPassw(passw)} />
         </View>
-        <View style={styles.buttonContainer}>
-        <TouchableOpacity
-          onPress={handleLogin}
-          style={styles.button}
-        >
-          <Text style={styles.buttonText}>Login</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          onPress={handleSignUp}
-          style={[styles.button, styles.buttonOutline]}
-        >
-          <Text style={styles.buttonOutlineText}>Create an account</Text>
-        </TouchableOpacity>
-        </View>
+
       </KeyboardAvoidingView>
-      {/* <Button onPress={() => navigation.navigate("ContactList")} style={styles.loginButton} color="#ffffff" >
-        LOGIN
+      <Button onPress={handleLogin} style={styles.loginButton} color="#ffffff" >
+      LOGIN
       </Button>
-      <Button onPress={() => navigation.navigate("ContactList")} style={styles.signupButton} color="#6800ef" >
+      <Button onPress={handleSignUp} style={styles.signupButton} color="#6800ef" >
         Create an account
-      </Button> */}
+      </Button>
+      {/*
+      <TouchableOpacity
+      onPress={handleLogin}
+      style={styles.button}
+      >
+      <Text style={styles.buttonText}>Login</Text>
+      </TouchableOpacity>
+      <TouchableOpacity
+      onPress={handleSignUp}
+      style={[styles.button, styles.buttonOutline]}
+      >
+        <Text style={styles.buttonOutlineText}>Create an account</Text>
+      </TouchableOpacity>
+      */}
     </PaperProvider>
   );
 };
@@ -103,6 +104,21 @@ const LoginScreen = ({ navigation }) => {
 const ContactListScreen = ({ navigation }) => {
   const [searchQuery, setSearchQuery] = React.useState('');
   const onChangeSearch = query => setSearchQuery(query);
+
+  const sort_type = (sort_param, x, y) => {
+    if (sort_param == "itemid") {
+      return x.id > y.id;
+    }
+    else if (sort_param == "name_asc") {
+      return x.name.localeCompare(y.name);
+    }
+    else if (sort_param == "name_desc") {
+      return y.name.localeCompare(x.name);
+    }
+    else {
+      return x.id > y.id;
+    }
+  }
 
   return (
     <PaperProvider>
@@ -130,7 +146,7 @@ const ContactListScreen = ({ navigation }) => {
             {id: 9, name: 'James', pos: 'Database Admin', img: require('./assets/pfp10.png')},
             {id: 10, name: 'Joel', pos: 'Network Admin', img: require('./assets/pfp8.png')},
             {id: 11, name: 'Marcelle', pos: 'Backend Developer', img: require('./assets/pfp7.png')},
-          ].sort((a, b) => a.name.localeCompare(b.name))}
+          ].sort((a, b) => {return sort_type("name_desc", a, b)})}
           renderItem={({item}) => ( <TouchableOpacity onPress={() => navigation.navigate("Contact", {itemId: item.id, name: item.name, job: item.pos, img: item.img})}>
                                     <List.Item
                                       title={item.name}
@@ -172,7 +188,7 @@ const ContactScreen = ({ route, navigation }) => {
   return (
     <PaperProvider>
       <View style={{marginBottom: 10, height: 200}}>
-        <Image source={require('./assets/pfp11-2.jpg')} style={{height: 250}}/>
+        <Image source={require('./assets/pfp9-2.jpg')} style={{height: 250}}/>
       </View>
       <FAB style={{alignSelf: 'flex-end', marginRight: 10}} 
            color='white' 
@@ -251,7 +267,7 @@ const ContactEditScreen = ({ route, navigation }) => {
       <View style={styles.infoContainer}>
         <View style={{flexDirection: "row", width: "100%", justifyContent: 'flex-end', marginTop: 50}} >
           <List.Item
-          title={[name, "Smith"].join(" ")}
+          title={name}
           description={job}
           left={props => <List.Icon {...props} icon='account' />}
           style={{width: 100, flexGrow: 1}}
@@ -283,14 +299,14 @@ const ContactEditScreen = ({ route, navigation }) => {
         </View>
         <FlatList
           data={[
-            {id: 1, name: [name, "Smith"].join(" "), icon:'account'},
-            {id: 2, name: '123-456-7890', icon:'phone'},
+            {id: 1, name: name, icon:'account'},
+            {id: 2, name: 'Phone number', icon:'phone'},
             {id: 3, name: job, icon:'account-group'},
-            {id: 4, name: 'CaseCampus', icon:'map-marker'},
+            {id: 4, name: 'Where you met', icon:'map-marker'},
             {id: 5, name: '12.12.2020', icon:'calendar-month'},
-            {id: 6, name: name.toLowerCase()+'@cool-startup.io', icon:'email'},
-            {id: 7, name: 'linkedin.com/in/'+name.toLowerCase()+"smith", icon:'link-variant'},
-            {id: 8, name: 'Ask questions about digital marketing', icon:'note'},
+            {id: 6, name: 'example@cool-startup.io', icon:'email'},
+            {id: 7, name: 'linkedin.com/in/example', icon:'link-variant'},
+            {id: 8, name: 'Your notes here...', icon:'note'},
           ]}
           renderItem={({item}) => <List.Item
                                     title={item.name}
