@@ -5,7 +5,7 @@ import { StyleSheet, FlatList, View, KeyboardAvoidingView, Platform, TouchableOp
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { Appbar, TextInput, FAB, Button, Paragraph, Text, List, ListItem, IconButton, Colors,
-         Headline, Provider as PaperProvider, Title, Card, Avatar } from 'react-native-paper';
+         Headline, Provider as PaperProvider, Title, Card, Avatar, Searchbar } from 'react-native-paper';
 //import { expo as appName } from './app.json';
 
 const Stack = createNativeStackNavigator();
@@ -19,6 +19,7 @@ export default class App extends Component {
           <Stack.Screen name="Login" component={LoginScreen} />
           <Stack.Screen name="ContactList" component={ContactListScreen} />
           <Stack.Screen name="Contact" component={ContactScreen} />
+          <Stack.Screen name="EditScreen" component={ContactEditScreen} />
         </Stack.Navigator>
       </NavigationContainer></>
     );
@@ -55,6 +56,9 @@ const LoginScreen = ({ navigation }) => {
 };
 
 const ContactListScreen = ({ navigation }) => {
+  const [searchQuery, setSearchQuery] = React.useState('');
+  const onChangeSearch = query => setSearchQuery(query);
+
   return (
     <PaperProvider>
       <Appbar style={styles.barTop}>
@@ -62,6 +66,7 @@ const ContactListScreen = ({ navigation }) => {
         <Text style={styles.menuText}> 
           Contacts
         </Text>
+        
         <Appbar.Action style={{alignItems: 'flex-end', flex:1}} icon="magnify" onPress={() => console.log("Pressed search.")} />
         <Appbar.Action icon="filter-variant" onPress={() => console.log("Pressed filter.")} />
       </Appbar>
@@ -80,7 +85,7 @@ const ContactListScreen = ({ navigation }) => {
             {id: 9, name: 'James', pos: 'Database Admin', img: require('./assets/pfp10.png')},
             {id: 10, name: 'Joel', pos: 'Network Admin', img: require('./assets/pfp8.png')},
             {id: 11, name: 'Marcelle', pos: 'Backend Developer', img: require('./assets/pfp7.png')},
-          ]}
+          ].sort((a, b) => a.name.localeCompare(b.name))}
           renderItem={({item}) => ( <TouchableOpacity onPress={() => navigation.navigate("Contact", {itemId: item.id, name: item.name, job: item.pos, img: item.img})}>
                                     <List.Item
                                       title={item.name}
@@ -100,16 +105,18 @@ const ContactListScreen = ({ navigation }) => {
                 }}
               />
             ))
-          }      
+          }
         />
       </View>
-
 
       <Appbar style={styles.barBottom}>
         <Appbar.Action icon="contacts" onPress={() => console.log("Pressed contacts.")} />
         <Appbar.Action icon="trash-can-outline" onPress={() => console.log("Pressed delete.")} />
 
-        <FAB style={styles.fab} icon='plus' color='white' onPress={() => console.log("Pressed add contact")} />
+        <FAB style={styles.fab} 
+             icon='plus' 
+             color='white' 
+             onPress={() => navigation.navigate("EditScreen", {itemId: 0, name: "Name Surname", job: "Job", img: "img"})} />
       </Appbar>
     </PaperProvider>
   );
@@ -122,7 +129,10 @@ const ContactScreen = ({ route, navigation }) => {
       <View style={{marginBottom: 10, height: 200}}>
         <Image source={require('./assets/pfp11-2.jpg')} style={{height: 250}}/>
       </View>
-      <FAB style={{alignSelf: 'flex-end', marginRight: 10}} color='white' icon="fountain-pen-tip"/>
+      <FAB style={{alignSelf: 'flex-end', marginRight: 10}} 
+           color='white' 
+           icon="fountain-pen-tip" 
+           onPress={() => navigation.navigate("EditScreen", {itemId: itemId, name: name, job: job, img: img})}/>
 
       <View style={styles.infoContainer}>
         <View style={{flexDirection: "row", width: "100%", justifyContent: 'flex-end'}} >
@@ -148,7 +158,7 @@ const ContactScreen = ({ route, navigation }) => {
               onPress={() => console.log('Pressed')}
             /> 
           </View>
-          <View style={{marginLeft: 10}}>   
+          <View style={{marginRight: 10}}>
             <IconButton
               icon="emoticon-sad"
               color="#24d4af"
@@ -159,13 +169,82 @@ const ContactScreen = ({ route, navigation }) => {
         </View>
         <FlatList
           data={[
-            {id: 1, name: 'Sandra Adams', icon:'account'},
+            {id: 1, name: [name, "Smith"].join(" "), icon:'account'},
             {id: 2, name: '123-456-7890', icon:'phone'},
             {id: 3, name: job, icon:'account-group'},
             {id: 4, name: 'CaseCampus', icon:'map-marker'},
             {id: 5, name: '12.12.2020', icon:'calendar-month'},
-            {id: 6, name: 'sandra@cool-startup.io', icon:'email'},
-            {id: 7, name: 'linkedin.com/in/sandraadams', icon:'link-variant'},
+            {id: 6, name: name.toLowerCase()+'@cool-startup.io', icon:'email'},
+            {id: 7, name: 'linkedin.com/in/'+name.toLowerCase()+"smith", icon:'link-variant'},
+            {id: 8, name: 'Ask questions about digital marketing', icon:'note'},
+          ]}
+          renderItem={({item}) => <List.Item
+                                    title={item.name}
+                                    left={props => <List.Icon {...props} icon={item.icon} />}
+                                  />}
+          ItemSeparatorComponent={
+            (({ highlighted }) => (
+              <View
+                style={{
+                  borderBottomColor: '#bbbbbb',
+                  marginHorizontal: 20,
+                  borderBottomWidth: 2,
+                }}
+              />
+            ))
+          }      
+        />
+      </View>
+    </PaperProvider>
+  );
+};
+
+const ContactEditScreen = ({ route, navigation }) => {
+  const { itemId, name, job, img } = route.params;
+  return (
+    <PaperProvider>
+      <View style={styles.infoContainer}>
+        <View style={{flexDirection: "row", width: "100%", justifyContent: 'flex-end', marginTop: 50}} >
+          <List.Item
+          title={[name, "Smith"].join(" ")}
+          description={job}
+          left={props => <List.Icon {...props} icon='account' />}
+          style={{width: 100, flexGrow: 1}}
+          />
+          <View style={{marginRight: 0}}>   
+            <IconButton
+              icon="emoticon-happy"
+              color="#24d4af"
+              size={30}
+              onPress={() => console.log('Pressed')}
+            /> 
+          </View>
+          <View style={{marginLeft: 0}}>
+            <IconButton
+              icon="emoticon-neutral"
+              color="#24d4af"
+              size={30}
+              onPress={() => console.log('Pressed')}
+            /> 
+          </View>
+          <View style={{marginRight: 10}}>
+            <IconButton
+              icon="emoticon-sad"
+              color="#24d4af"
+              size={30}
+              onPress={() => console.log('Pressed')}
+            /> 
+          </View>
+        </View>
+        <FlatList
+          data={[
+            {id: 1, name: [name, "Smith"].join(" "), icon:'account'},
+            {id: 2, name: '123-456-7890', icon:'phone'},
+            {id: 3, name: job, icon:'account-group'},
+            {id: 4, name: 'CaseCampus', icon:'map-marker'},
+            {id: 5, name: '12.12.2020', icon:'calendar-month'},
+            {id: 6, name: name.toLowerCase()+'@cool-startup.io', icon:'email'},
+            {id: 7, name: 'linkedin.com/in/'+name.toLowerCase()+"smith", icon:'link-variant'},
             {id: 8, name: 'Ask questions about digital marketing', icon:'note'},
           ]}
           renderItem={({item}) => <List.Item
@@ -204,7 +283,14 @@ const styles = StyleSheet.create({
     marginVertical: 16,
     paddingTop: 20,
     color: '#6800ef',
-    fontFamily: 'Roboto',
+    ...Platform.select({
+      ios: {
+        fontFamily: 'Arial',
+      },
+      android: {
+        fontFamily: 'Roboto',
+      }
+    }),
     fontWeight: "100",
     letterSpacing: 4,
   },
@@ -258,7 +344,7 @@ const styles = StyleSheet.create({
     color: '#ffffff',
     ...Platform.select({
       ios: {
-        fontFamily: 'Papyrus',
+        fontFamily: 'Arial',
       },
       android: {
         fontFamily: 'Roboto',
