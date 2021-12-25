@@ -75,7 +75,7 @@ const ContactListScreen = ({ navigation }) => {
             {id: 4, name: 'Birdie', pos: 'Sales Engineer', img: require('./assets/pfp3.png')},
             {id: 5, name: 'Devin', pos: 'DevOps', img: require('./assets/pfp5.png')},
             {id: 6, name: 'Dan', pos: 'CTO', img: require('./assets/pfp4.png')},
-            {id: 7, name: 'Dominic', pos: 'QA', img: require('./assets/pfp11-2.png')},
+            {id: 7, name: 'Dominic', pos: 'QA', img: require('./assets/pfp11.png')},
             {id: 8, name: 'Katie', pos: 'Senior Developer', img: require('./assets/pfp6.png')},
             {id: 9, name: 'James', pos: 'Database Admin', img: require('./assets/pfp10.png')},
             {id: 10, name: 'Joel', pos: 'Network Admin', img: require('./assets/pfp8.png')},
@@ -120,7 +120,7 @@ const ContactScreen = ({ route, navigation }) => {
   return (
     <PaperProvider>
       <View style={{marginBottom: 10, height: 200}}>
-        <Image source={require('./assets/pfp11.jpg')} style={{height: 250}}/>
+        <Image source={require('./assets/pfp11-2.jpg')} style={{height: 250}}/>
       </View>
       <FAB style={{alignSelf: 'flex-end', marginRight: 10}} color='white' icon="fountain-pen-tip"/>
 
