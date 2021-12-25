@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { useEffect, useState, Component } from 'react';
 //import * as React from 'react';
 //import { AppRegistry } from 'react-native';
 import { StyleSheet, FlatList, View, KeyboardAvoidingView, Platform, TouchableOpacity, Image, StatusBar } from 'react-native';
@@ -7,6 +7,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { Appbar, TextInput, FAB, Button, Paragraph, Text, List, ListItem, IconButton, Colors,
          Headline, Provider as PaperProvider, Title, Card, Avatar, Searchbar } from 'react-native-paper';
 //import { expo as appName } from './app.json';
+import { auth } from './firebase';
 
 const Stack = createNativeStackNavigator();
 
@@ -29,6 +30,36 @@ export default class App extends Component {
 const LoginScreen = ({ navigation }) => {
   const [email, setEmail] = React.useState('');
   const [passw, setPassw] = React.useState('');
+  
+  useEffect(() => {
+    const unsubscribe = auth.onAuthStateChanged(user => {
+      if (user) {
+        navigation.replace("ContactList")
+      }
+    })
+
+    return unsubscribe
+  }, [])
+
+  const handleSignUp = () => {
+    auth
+      .createUserWithEmailAndPassword( email, passw)
+      .then(userCredentials => {
+        const user = userCredentials.user;
+        console.log('Registered with:', user.email);
+      })
+      .catch(error => alert(error.message))
+  }
+
+  const handleLogin = () => {
+    auth
+      .signInWithEmailAndPassword( email, passw)
+      .then(userCredentials => {
+        const user = userCredentials.user;
+        console.log('Logged in with:', user.email);
+      })
+      .catch(error => alert(error.message))
+  }
 
   return (
     <PaperProvider>
@@ -44,13 +75,27 @@ const LoginScreen = ({ navigation }) => {
           <TextInput label="Password" value={passw} secureTextEntry={true} style={styles.loginInput}
                     onChangeText={passw => setPassw(passw)} />
         </View>
+        <View style={styles.buttonContainer}>
+        <TouchableOpacity
+          onPress={handleLogin}
+          style={styles.button}
+        >
+          <Text style={styles.buttonText}>Login</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          onPress={handleSignUp}
+          style={[styles.button, styles.buttonOutline]}
+        >
+          <Text style={styles.buttonOutlineText}>Create an account</Text>
+        </TouchableOpacity>
+        </View>
       </KeyboardAvoidingView>
-      <Button onPress={() => navigation.navigate("ContactList")} style={styles.loginButton} color="#ffffff" >
+      {/* <Button onPress={() => navigation.navigate("ContactList")} style={styles.loginButton} color="#ffffff" >
         LOGIN
       </Button>
       <Button onPress={() => navigation.navigate("ContactList")} style={styles.signupButton} color="#6800ef" >
         Create an account
-      </Button>
+      </Button> */}
     </PaperProvider>
   );
 };
@@ -361,7 +406,36 @@ const styles = StyleSheet.create({
   },
   infoContainer: {
     flex: 1,
-  }
+  },
+  buttonContainer: {
+    width: '60%',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 40,
+  },
+  button: {
+    backgroundColor: '#6800ef',
+    width: '100%',
+    padding: 15,
+    borderRadius: 10,
+    alignItems: 'center',
+  },
+  buttonOutline: {
+    backgroundColor: 'white',
+    marginTop: 5,
+    borderColor: '#6800ef',
+    borderWidth: 2,
+  },
+  buttonText: {
+    color: 'white',
+    fontWeight: '700',
+    fontSize: 16,
+  },
+  buttonOutlineText: {
+    color: '#6800ef',
+    fontWeight: '700',
+    fontSize: 16,
+  },
 })
 
 //AppRegistry.registerComponent(appName.name, () => App)
