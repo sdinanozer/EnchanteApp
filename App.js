@@ -1,11 +1,11 @@
 import React, { Component } from 'react';
 //import * as React from 'react';
 //import { AppRegistry } from 'react-native';
-import { StyleSheet, FlatList, View, KeyboardAvoidingView, Platform, TouchableOpacity } from 'react-native';
+import { StyleSheet, FlatList, View, KeyboardAvoidingView, Platform, TouchableOpacity, Image, StatusBar } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { Appbar, TextInput, FAB, Button, Paragraph, Text, List, ListItem, IconButton, Colors,
-         Headline, Provider as PaperProvider, Title, Card } from 'react-native-paper';
+         Headline, Provider as PaperProvider, Title, Card, Avatar } from 'react-native-paper';
 //import { expo as appName } from './app.json';
 
 const Stack = createNativeStackNavigator();
@@ -13,13 +13,14 @@ const Stack = createNativeStackNavigator();
 export default class App extends Component {
   render() {
     return (
+      <><StatusBar hidden />
       <NavigationContainer>
-        <Stack.Navigator screenOptions={{ headerShown: false }} >
+        <Stack.Navigator screenOptions={{ headerShown: false }}>
           <Stack.Screen name="Login" component={LoginScreen} />
           <Stack.Screen name="ContactList" component={ContactListScreen} />
           <Stack.Screen name="Contact" component={ContactScreen} />
         </Stack.Navigator>
-      </NavigationContainer>
+      </NavigationContainer></>
     );
   }
 };
@@ -68,26 +69,23 @@ const ContactListScreen = ({ navigation }) => {
       <View style={styles.contactContainer}>
         <FlatList
           data={[
-            {id: 1, name: 'Vincent', pos: 'HR'},
-            {id: 2, name: 'Summer', pos: 'Marketing'},
-            {id: 3, name: 'Jane', pos: 'CEO'},
-            {id: 4, name: 'Birdie', pos: 'Sales Intern'},
-            {id: 5, name: 'Devin', pos: 'DevOps'},
-            {id: 6, name: 'Dan', pos: 'CTO'},
-            {id: 7, name: 'Dominic', pos: 'QA'},
-            {id: 8, name: 'Jackson', pos: 'Senior Developer'},
-            {id: 9, name: 'James', pos: 'Database Admin'},
-            {id: 10, name: 'Joel', pos: 'Network Admin'},
-            {id: 11, name: 'John', pos: 'Backend Developer'},
-            {id: 12, name: 'Jillian', pos: 'Security Engineer'},
-            {id: 13, name: 'Jimmy', pos: 'Frontend Developer'},
-            {id: 14, name: 'Julie', pos: 'CFO'},
+            {id: 1, name: 'Vincent', pos: 'HR', img: require('./assets/pfp2.png')},
+            {id: 2, name: 'Summer', pos: 'Marketing', img: require('./assets/pfp1.png')},
+            {id: 3, name: 'Jane', pos: 'CEO', img: require('./assets/pfp9.png')},
+            {id: 4, name: 'Birdie', pos: 'Sales Engineer', img: require('./assets/pfp3.png')},
+            {id: 5, name: 'Devin', pos: 'DevOps', img: require('./assets/pfp5.png')},
+            {id: 6, name: 'Dan', pos: 'CTO', img: require('./assets/pfp4.png')},
+            {id: 7, name: 'Dominic', pos: 'QA', img: require('./assets/pfp11-2.png')},
+            {id: 8, name: 'Katie', pos: 'Senior Developer', img: require('./assets/pfp6.png')},
+            {id: 9, name: 'James', pos: 'Database Admin', img: require('./assets/pfp10.png')},
+            {id: 10, name: 'Joel', pos: 'Network Admin', img: require('./assets/pfp8.png')},
+            {id: 11, name: 'Marcelle', pos: 'Backend Developer', img: require('./assets/pfp7.png')},
           ]}
-          renderItem={({item}) => ( <TouchableOpacity onPress={() => navigation.navigate("Contact", {itemId: item.id, job: item.pos})}>
+          renderItem={({item}) => ( <TouchableOpacity onPress={() => navigation.navigate("Contact", {itemId: item.id, name: item.name, job: item.pos, img: item.img})}>
                                     <List.Item
                                       title={item.name}
                                       description={item.pos}
-                                      left={props => <List.Icon {...props} icon="folder" />}
+                                      left={props => <Avatar.Image size={40} source={item.img} style={{marginTop: 8, marginLeft: 10}} />}
                                       />
                                     </TouchableOpacity>
                                   )}
@@ -118,16 +116,22 @@ const ContactListScreen = ({ navigation }) => {
 };
 
 const ContactScreen = ({ route, navigation }) => {
-  const { itemId, job } = route.params;
+  const { itemId, name, job, img } = route.params;
   return (
     <PaperProvider>
-      <View style={{marginBottom: 50}}>
-        <Text>
-          TEXT TEXT
-        </Text>
+      <View style={{marginBottom: 10, height: 200}}>
+        <Image source={require('./assets/pfp11.jpg')} style={{height: 250}}/>
       </View>
-      <View style={styles.contactContainer}>
+      <FAB style={{alignSelf: 'flex-end', marginRight: 10}} color='white' icon="fountain-pen-tip"/>
+
+      <View style={styles.infoContainer}>
         <View style={{flexDirection: "row", width: "100%", justifyContent: 'flex-end'}} >
+          <List.Item
+          title={[name, "Smith"].join(" ")}
+          description={job}
+          left={props => <Avatar.Image size={40} source={img} style={{marginTop: 8, marginLeft: 10}} />}
+          style={{width: 100, flexGrow: 1}}
+          />
           <View style={{marginRight: 0}}>   
             <IconButton
               icon="emoticon-happy"
@@ -240,8 +244,8 @@ const styles = StyleSheet.create({
   },
   contactContainer: {
     flex: 1,
-    paddingTop: 24,
-    marginTop: 24,
+    paddingVertical: 24,
+    marginVertical: 24,
   },
   contactItem: {
     padding: 20,
@@ -269,6 +273,9 @@ const styles = StyleSheet.create({
     right: 0,
     bottom: 0,
   },
+  infoContainer: {
+    flex: 1,
+  }
 })
 
 //AppRegistry.registerComponent(appName.name, () => App)
