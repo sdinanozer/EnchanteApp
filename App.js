@@ -8,6 +8,8 @@ import { Appbar, TextInput, FAB, Button, Paragraph, Text, List, ListItem, IconBu
          Headline, Provider as PaperProvider, Title, Card, Avatar, Searchbar } from 'react-native-paper';
 //import { expo as appName } from './app.json';
 import { auth } from './firebase';
+import { LogBox } from 'react-native';
+LogBox.ignoreLogs(['Warning: Async Storage has been extracted from react-native core']);
 
 const Stack = createNativeStackNavigator();
 
@@ -104,7 +106,22 @@ const LoginScreen = ({ navigation }) => {
 const ContactListScreen = ({ navigation }) => {
   const [searchQuery, setSearchQuery] = React.useState('');
   const onChangeSearch = query => setSearchQuery(query);
+  const list_data = [
+    {id: 1, name: 'Vincent', pos: 'HR', img: require('./assets/pfp2.png')},
+    {id: 2, name: 'Summer', pos: 'Marketing', img: require('./assets/pfp1.png')},
+    {id: 3, name: 'Sandra', pos: 'Senior Developer', img: require('./assets/pfp9.png')},
+    {id: 4, name: 'Birdie', pos: 'Sales Engineer', img: require('./assets/pfp3.png')},
+    {id: 5, name: 'Devin', pos: 'DevOps', img: require('./assets/pfp5.png')},
+    {id: 6, name: 'Dan', pos: 'CTO', img: require('./assets/pfp4.png')},
+    {id: 7, name: 'Dominic', pos: 'QA', img: require('./assets/pfp11.png')},
+    {id: 8, name: 'Katie', pos: 'Senior Developer', img: require('./assets/pfp6.png')},
+    {id: 9, name: 'James', pos: 'Database Admin', img: require('./assets/pfp10.png')},
+    {id: 10, name: 'Joel', pos: 'Network Admin', img: require('./assets/pfp8.png')},
+    {id: 11, name: 'Marcelle', pos: 'Backend Developer', img: require('./assets/pfp7.png')},
+  ]
 
+  var sort_type = "name_asc"
+  /*
   const sort_type = (sort_param, x, y) => {
     if (sort_param == "itemid") {
       return x.id > y.id;
@@ -119,12 +136,14 @@ const ContactListScreen = ({ navigation }) => {
       return x.id > y.id;
     }
   }
+  */
 
   const handleSignOut = () => {
     auth
       .signOut()
       .then(() => {
         navigation.replace("Login")
+        console.log("Logged out");
       })
       .catch(error => alert(error.message))
   }
@@ -139,24 +158,18 @@ const ContactListScreen = ({ navigation }) => {
         
         <Appbar.Action style={{alignItems: 'flex-end', flex:1}} icon="magnify" onPress={() => console.log("Pressed search.")} />
         <Appbar.Action icon="filter-variant" onPress={() => console.log("Pressed filter.")} />
-        <Appbar.Action icon="logout" onPress={handleSignout} />
+        <Appbar.Action icon="logout" onPress={handleSignOut} />
       </Appbar>
 
       <View style={styles.contactContainer}>
         <FlatList
-          data={[
-            {id: 1, name: 'Vincent', pos: 'HR', img: require('./assets/pfp2.png')},
-            {id: 2, name: 'Summer', pos: 'Marketing', img: require('./assets/pfp1.png')},
-            {id: 3, name: 'Sandra', pos: 'Senior Developer', img: require('./assets/pfp9.png')},
-            {id: 4, name: 'Birdie', pos: 'Sales Engineer', img: require('./assets/pfp3.png')},
-            {id: 5, name: 'Devin', pos: 'DevOps', img: require('./assets/pfp5.png')},
-            {id: 6, name: 'Dan', pos: 'CTO', img: require('./assets/pfp4.png')},
-            {id: 7, name: 'Dominic', pos: 'QA', img: require('./assets/pfp11.png')},
-            {id: 8, name: 'Katie', pos: 'Senior Developer', img: require('./assets/pfp6.png')},
-            {id: 9, name: 'James', pos: 'Database Admin', img: require('./assets/pfp10.png')},
-            {id: 10, name: 'Joel', pos: 'Network Admin', img: require('./assets/pfp8.png')},
-            {id: 11, name: 'Marcelle', pos: 'Backend Developer', img: require('./assets/pfp7.png')},
-          ].sort((a, b) => {return sort_type("name_desc", a, b)})}
+          data={
+                  sort_type === "itemid" ? 
+                    list_data.sort((a, b) => {a.id > b.id}) : 
+                  sort_type === "name_asc" ?
+                    list_data.sort((a, b) => {a.name.localeCompare(b.name)}) :
+                  list_data.sort((a, b) => {b.name.localeCompare(a.name)})
+                }
           renderItem={({item}) => ( <TouchableOpacity onPress={() => navigation.navigate("Contact", {itemId: item.id, name: item.name, job: item.pos, img: item.img})}>
                                     <List.Item
                                       title={item.name}
@@ -193,8 +206,21 @@ const ContactListScreen = ({ navigation }) => {
   );
 };
 
-const ContactScreen = ({ route, navigation }) => {
+const ContactScreen = (props) => {
+  const { route, navigation } = props
   const { itemId, name, job, img } = route.params;
+  const contact_data = [
+    {id: 1, name: [name, "Smith"].join(" "), icon:'account'},
+    {id: 2, name: '123-456-7890', icon:'phone'},
+    {id: 3, name: job, icon:'account-group'},
+    {id: 4, name: 'CaseCampus', icon:'map-marker'},
+    {id: 5, name: '12.12.2020', icon:'calendar-month'},
+    {id: 6, name: name.toLowerCase()+'@cool-startup.io', icon:'email'},
+    {id: 7, name: 'linkedin.com/in/'+name.toLowerCase()+"smith", icon:'link-variant'},
+    {id: 8, name: 'Ask questions about digital marketing', icon:'note'},
+  ]
+  var active_button = "happy"
+
   return (
     <PaperProvider>
       <View style={{marginBottom: 10, height: 200}}>
@@ -203,7 +229,7 @@ const ContactScreen = ({ route, navigation }) => {
       <FAB style={{alignSelf: 'flex-end', marginRight: 10}} 
            color='white' 
            icon="fountain-pen-tip" 
-           onPress={() => navigation.navigate("EditScreen", {itemId: itemId, name: name, job: job, img: img})}/>
+           onPress={() => navigation.navigate("EditScreen", {itemId: itemId, name: name, job: job, img: img, c_data: contact_data})}/>
 
       <View style={styles.infoContainer}>
         <View style={{flexDirection: "row", width: "100%", justifyContent: 'flex-end'}} >
@@ -216,39 +242,30 @@ const ContactScreen = ({ route, navigation }) => {
           <View style={{marginRight: 0}}>   
             <IconButton
               icon="emoticon-happy"
-              color="#24d4af"
+              color={active_button == "happy" ? "#24d4af" : "#92ead7"}
               size={30}
-              onPress={() => console.log('Pressed')}
+              onPress={() => active_button = "neutral"}
             /> 
           </View>
           <View style={{marginLeft: 0}}>
             <IconButton
               icon="emoticon-neutral"
-              color="#24d4af"
+              color="#92ead7"
               size={30}
-              onPress={() => console.log('Pressed')}
+              onPress={() => console.log(active_button)}
             /> 
           </View>
           <View style={{marginRight: 10}}>
             <IconButton
               icon="emoticon-sad"
-              color="#24d4af"
+              color="#92ead7"
               size={30}
-              onPress={() => console.log('Pressed')}
+              onPress={() => console.log(active_button)}
             /> 
           </View>
         </View>
         <FlatList
-          data={[
-            {id: 1, name: [name, "Smith"].join(" "), icon:'account'},
-            {id: 2, name: '123-456-7890', icon:'phone'},
-            {id: 3, name: job, icon:'account-group'},
-            {id: 4, name: 'CaseCampus', icon:'map-marker'},
-            {id: 5, name: '12.12.2020', icon:'calendar-month'},
-            {id: 6, name: name.toLowerCase()+'@cool-startup.io', icon:'email'},
-            {id: 7, name: 'linkedin.com/in/'+name.toLowerCase()+"smith", icon:'link-variant'},
-            {id: 8, name: 'Ask questions about digital marketing', icon:'note'},
-          ]}
+          data={contact_data}
           renderItem={({item}) => <List.Item
                                     title={item.name}
                                     left={props => <List.Icon {...props} icon={item.icon} />}
@@ -271,15 +288,23 @@ const ContactScreen = ({ route, navigation }) => {
 };
 
 const ContactEditScreen = ({ route, navigation }) => {
-  const { itemId, name, job, img } = route.params;
+  const { itemId, name, job, img, c_data } = route.params;
+  const [name_val, setName] = React.useState('');
+  const [phone_val, setPhone] = React.useState('');
+  const [job_val, setJob] = React.useState('');
+  const [loc_val, setLoc] = React.useState('');
+  const [date_val, setDate] = React.useState('');
+  const [mail_val, setMail] = React.useState('');
+  const [profile_val, setProfile] = React.useState('');
+  const [note_val, setNotes] = React.useState('');
+
   return (
     <PaperProvider>
       <View style={styles.infoContainer}>
         <View style={{flexDirection: "row", width: "100%", justifyContent: 'flex-end', marginTop: 50}} >
           <List.Item
-          title={name}
-          description={job}
-          left={props => <List.Icon {...props} icon='account' />}
+          title="Rate this encounter"
+          description=""
           style={{width: 100, flexGrow: 1}}
           />
           <View style={{marginRight: 0}}>   
@@ -307,34 +332,76 @@ const ContactEditScreen = ({ route, navigation }) => {
             /> 
           </View>
         </View>
-        <FlatList
-          data={[
-            {id: 1, name: name, icon:'account'},
-            {id: 2, name: 'Phone number', icon:'phone'},
-            {id: 3, name: job, icon:'account-group'},
-            {id: 4, name: 'Where you met', icon:'map-marker'},
-            {id: 5, name: '12.12.2020', icon:'calendar-month'},
-            {id: 6, name: 'example@cool-startup.io', icon:'email'},
-            {id: 7, name: 'linkedin.com/in/example', icon:'link-variant'},
-            {id: 8, name: 'Your notes here...', icon:'note'},
-          ]}
-          renderItem={({item}) => <List.Item
-                                    title={item.name}
-                                    left={props => <List.Icon {...props} icon={item.icon} />}
-                                  />}
-          ItemSeparatorComponent={
-            (({ highlighted }) => (
-              <View
-                style={{
-                  borderBottomColor: '#bbbbbb',
-                  marginHorizontal: 20,
-                  borderBottomWidth: 2,
-                }}
-              />
-            ))
-          }      
-        />
+        <View style={styles.editContainer}>
+          <TextInput
+            label="Name Surname"
+            dense
+            placeholder={name}
+            value={name_val}
+            onChangeText={name_val => {setName(name_val); console.log(c_data[0]["name"] = name_val+" Smith")}}
+            right={<TextInput.Icon name="account" />}
+          />
+          <TextInput
+            label="Phone Number"
+            dense
+            placeholder={"123-456-7890"}
+            value={phone_val}
+            onChangeText={phone_val => setPhone(phone_val)}
+            right={<TextInput.Icon name="phone" />}
+          />
+          <TextInput
+            label="Position"
+            dense
+            placeholder={job}
+            value={job_val}
+            onChangeText={job_val => setJob(job_val)}
+            right={<TextInput.Icon name="account-group" />}
+          />
+          <TextInput
+            label="Where You Met"
+            dense
+            placeholder={"CaseCampus"}
+            value={loc_val}
+            onChangeText={loc_val => setLoc(loc_val)}
+            right={<TextInput.Icon name="map-marker" />}
+          />
+          <TextInput
+            label="Calendar"
+            dense
+            placeholder={"12.12.2021"}
+            value={date_val}
+            onChangeText={date_val => setDate(date_val)}
+            right={<TextInput.Icon name="calendar-month" />}
+          />
+          <TextInput
+            label="E-mail"
+            dense
+            placeholder={name.toLowerCase()+'@cool-startup.io'}
+            value={mail_val}
+            onChangeText={mail_val => setMail(mail_val)}
+            right={<TextInput.Icon name="email" />}
+          />
+          <TextInput
+            label="LinkedIn Profile"
+            dense
+            placeholder={'linkedin.com/in/'+name.toLowerCase()+"smith"}
+            value={profile_val}
+            onChangeText={profile_val => setProfile(profile_val)}
+            right={<TextInput.Icon name="link-variant" />}
+          />
+          <TextInput
+            label="Notes"
+            dense
+            placeholder="Your notes here..."
+            value={note_val}
+            onChangeText={note_val => setNotes(note_val)}
+            right={<TextInput.Icon name="note" />}
+          />
+        </View>
       </View>
+      <Button onPress={() => console.log("Saved changes.")} style={styles.loginButton} color="#ffffff" >
+      Save Changes
+      </Button>
     </PaperProvider>
   );
 };
@@ -462,6 +529,9 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     fontSize: 16,
   },
+  editContainer: {
+    marginHorizontal: 25,
+  }
 })
 
 //AppRegistry.registerComponent(appName.name, () => App)
