@@ -120,6 +120,15 @@ const ContactListScreen = ({ navigation }) => {
     }
   }
 
+  const handleSignOut = () => {
+    auth
+      .signOut()
+      .then(() => {
+        navigation.replace("Login")
+      })
+      .catch(error => alert(error.message))
+  }
+
   return (
     <PaperProvider>
       <Appbar style={styles.barTop}>
@@ -130,6 +139,7 @@ const ContactListScreen = ({ navigation }) => {
         
         <Appbar.Action style={{alignItems: 'flex-end', flex:1}} icon="magnify" onPress={() => console.log("Pressed search.")} />
         <Appbar.Action icon="filter-variant" onPress={() => console.log("Pressed filter.")} />
+        <Appbar.Action icon="logout" onPress={handleSignout} />
       </Appbar>
 
       <View style={styles.contactContainer}>
@@ -137,7 +147,7 @@ const ContactListScreen = ({ navigation }) => {
           data={[
             {id: 1, name: 'Vincent', pos: 'HR', img: require('./assets/pfp2.png')},
             {id: 2, name: 'Summer', pos: 'Marketing', img: require('./assets/pfp1.png')},
-            {id: 3, name: 'Jane', pos: 'CEO', img: require('./assets/pfp9.png')},
+            {id: 3, name: 'Sandra', pos: 'Senior Developer', img: require('./assets/pfp9.png')},
             {id: 4, name: 'Birdie', pos: 'Sales Engineer', img: require('./assets/pfp3.png')},
             {id: 5, name: 'Devin', pos: 'DevOps', img: require('./assets/pfp5.png')},
             {id: 6, name: 'Dan', pos: 'CTO', img: require('./assets/pfp4.png')},
