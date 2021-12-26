@@ -399,7 +399,7 @@ const ContactEditScreen = ({ route, navigation }) => {
           />
         </View>
       </View>
-      <Button onPress={() => console.log("Saved changes.")} style={styles.loginButton} color="#ffffff" >
+      <Button onPress={() => navigation.navigate("Contact", {itemId: item.id, name: item.name, job: item.pos, img: item.img})} style={styles.loginButton} color="#ffffff" >
       Save Changes
       </Button>
     </PaperProvider>
