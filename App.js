@@ -229,7 +229,7 @@ const ContactScreen = (props) => {
       <FAB style={{alignSelf: 'flex-end', marginRight: 10}} 
            color='white' 
            icon="fountain-pen-tip" 
-           onPress={() => navigation.navigate("EditScreen", {itemId: itemId, name: name, job: job, img: img, c_data: contact_data})}/>
+           onPress={() => navigation.navigate("EditScreen", {itemId: itemId, name: name, job: job, img: img})}/>
 
       <View style={styles.infoContainer}>
         <View style={{flexDirection: "row", width: "100%", justifyContent: 'flex-end'}} >
@@ -288,7 +288,7 @@ const ContactScreen = (props) => {
 };
 
 const ContactEditScreen = ({ route, navigation }) => {
-  const { itemId, name, job, img, c_data } = route.params;
+  const { itemId, name, job, img } = route.params;
   const [name_val, setName] = React.useState('');
   const [phone_val, setPhone] = React.useState('');
   const [job_val, setJob] = React.useState('');
@@ -338,7 +338,7 @@ const ContactEditScreen = ({ route, navigation }) => {
             dense
             placeholder={name}
             value={name_val}
-            onChangeText={name_val => {setName(name_val); console.log(c_data[0]["name"] = name_val+" Smith")}}
+            onChangeText={name_val => setName(name_val)}
             right={<TextInput.Icon name="account" />}
           />
           <TextInput
